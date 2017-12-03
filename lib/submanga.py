@@ -18,21 +18,24 @@ def getInfo(url):
 
     return manga
 
-def download(url, page):
-    r = requests.get(url)
-    bs = BeautifulSoup(r.text, 'html.parser')
-
-    pages = bs.findAll('img')
-
+def download(uri, page):
     try:
-        request.urlretrieve(pages[3].get('src'), "{}.jpg".format(page))
+        request.urlretrieve(uri, "{}.jpg".format(page))
     except Exception as e:
         print("Error! {}".format(e))
 
+def urlBuilder(uri, page):
+    r = requests.get(uri)
+    bs = BeautifulSoup(r.text, 'html.parser')
+    page_uri = bs.findAll('img')[3].get('src')
+
+    splited_uri = page_uri.split("/")
+    
+    return uri.replace(splited_uri[len(splited_uri) - 1], "{}.jpg".format(page))
+
 def getChapter(url, **kwargs):
 
-    info = getInfo(url)
-    
+    info = getInfo(url)    
     dest = kwargs.get('dest', None)
 
     if dest is None:
@@ -40,15 +43,11 @@ def getChapter(url, **kwargs):
 
     if not os.path.exists(dest):
         os.makedirs(dest)
-    else:
-        print("Destination directory doesn't exist!")
-        exit()
 
     os.chdir(dest)
 
     for page in range(1, info["pages"] + 1):
         print("Downloading '{} - {}'. Page {} of {}".format(info["title"], info["chapter"], page, info["pages"]))
-        if page == 1:
-            download("{}".format(url), "1")
-        else:
-            download("{}/{}".format(url, page), page)
+        download(urlBuilder(url, page), page)
+
+    print("Download finished!")
