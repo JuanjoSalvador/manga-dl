@@ -1,16 +1,24 @@
 from bs4 import BeautifulSoup
-import requests
 from urllib import request
+import requests
+import os
 
-def getNumberOfPages(url):
+def getInfo(url):
     request = requests.get(url)
     content = BeautifulSoup(request.text, 'html.parser')
 
-    pages = content.select('option')
+    manga = {}
 
-    return len(pages)
+    info = content.find('td', {'class': 'l'}).findAll('a')
 
-def getPage(url, page):
+    manga["title"]  = info[2].text
+    manga["pages"]  = len(content.select('option'))
+    manga["chapter"] = info[3].text
+    manga["fansub"] = info[1].text
+
+    return manga
+
+def download(url, page):
     r = requests.get(url)
     bs = BeautifulSoup(r.text, 'html.parser')
 
@@ -21,13 +29,26 @@ def getPage(url, page):
     except Exception as e:
         print("Error! {}".format(e))
 
-def getChapter(url):
-    for page in range(1, getNumberOfPages(url) + 1):
-        if page == 1:
-            getPage("{}".format(url), "1")
-        else:
-            getPage("{}/{}".format(url, page), page)
+def getChapter(url, **kwargs):
 
+    info = getInfo(url)
     
-    
-    
+    dest = kwargs.get('dest', None)
+
+    if dest is None:
+        dest = ("{}, chapter {}".format(info["title"], info["chapter"]))
+
+    if not os.path.exists(dest):
+        os.makedirs(dest)
+    else:
+        print("Destination directory doesn't exist!")
+        exit()
+
+    os.chdir(dest)
+
+    for page in range(1, info["pages"] + 1):
+        print("Downloading '{} - {}'. Page {} of {}".format(info["title"], info["chapter"], page, info["pages"]))
+        if page == 1:
+            download("{}".format(url), "1")
+        else:
+            download("{}/{}".format(url, page), page)
