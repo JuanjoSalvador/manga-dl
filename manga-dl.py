@@ -1,22 +1,27 @@
 import sys
 from urllib.parse import urlparse
-from lib import submanga as sm
+from lib import submanga, tumangaonline, heavenmanga
 
 VERSION = "0.1"
 
 def main():
     uri    = sys.argv[1]
-    site   = urlparse(uri).netloc
+    dest   = sys.argv[2]
+    site   = urlparse(uri).netloc.replace("www.", "")
     domain = site.split('.')[0]
 
     # Add here more sites!
     
     websites = {
-        'submanga': sm.getChapter
+        'submanga': submanga,
+        'tumangaonline': tumangaonline,
+        'heavenmanga': heavenmanga,
     }
+
     try:
-        websites[domain](uri)
-    except AttributeError:
+        websites[domain].getChapter(uri, dest=dest)
+    except AttributeError as ae:
+        print(ae)
         print("Error: '{}' is not a valid URL!".format(uri))
     except KeyError:
         print("Ooops! Sorry, '{}' is not a valid URL or is not supported yet.".format(site))
