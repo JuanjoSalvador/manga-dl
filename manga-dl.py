@@ -6,12 +6,10 @@ VERSION = "0.1"
 
 def main():
     uri    = sys.argv[1]
-    dest   = sys.argv[2]
     site   = urlparse(uri).netloc.replace("www.", "")
     domain = site.split('.')[0]
 
     # Add here more sites!
-    
     websites = {
         'submanga': submanga,
         'tumangaonline': tumangaonline,
@@ -19,7 +17,11 @@ def main():
     }
 
     try:
-        websites[domain].getChapter(uri, dest=dest)
+        if len(sys.argv) > 2:
+            websites[domain].getChapter(uri, dest=sys.argv[2])
+        else:
+            websites[domain].getChapter(uri)
+
     except AttributeError as ae:
         print(ae)
         print("Error: '{}' is not a valid URL!".format(uri))

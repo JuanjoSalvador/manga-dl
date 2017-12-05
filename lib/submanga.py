@@ -35,12 +35,15 @@ def urlBuilder(uri, page):
 
 def getChapter(url, **kwargs):
 
-    info = getInfo(url)    
-    dest = kwargs.get('dest', "{} {}".format(info["title"], info["chapter"]))
+    info  = getInfo(url)    
+    dest  = kwargs.get('dest', None)
+    title = "{} {}".format(info["title"], info["chapter"])
 
     if dest is not None:
         dest = "{}/{}".format(dest, title)
-
+    else:
+        dest = title
+        
     if not os.path.exists(dest):
         os.makedirs(dest)
 

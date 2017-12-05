@@ -20,11 +20,13 @@ def getChapter(uri, **kwargs):
     pages = soup.findAll('option')
     title = soup.find('title').text.split(' - ')[0]
 
-    dest  = kwargs.get('dest', title)
+    dest  = kwargs.get('dest', None)
 
     if dest is not None:
         dest = "{}/{}".format(dest, title)
-
+    else:
+        dest = title
+        
     if not os.path.exists(dest):
         os.makedirs(dest)
 
