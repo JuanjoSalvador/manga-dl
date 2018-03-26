@@ -3,7 +3,7 @@ from urllib import request
 import requests
 import os
 
-def getInfo(url):
+def _getInfo(url):
     request = requests.get(url)
     content = BeautifulSoup(request.text, 'html.parser')
 
@@ -18,7 +18,7 @@ def getInfo(url):
 
     return manga
 
-def download(url, page):
+def _download(url, page):
     r = requests.get(url)
     bs = BeautifulSoup(r.text, 'html.parser')
 
@@ -31,7 +31,7 @@ def download(url, page):
 
 def getChapter(url, **kwargs):
 
-    info = getInfo(url)
+    info = _getInfo(url)
     
     dest = kwargs.get('dest', None)
 
@@ -49,6 +49,6 @@ def getChapter(url, **kwargs):
     for page in range(1, info["pages"] + 1):
         print("Downloading '{} - {}'. Page {} of {}".format(info["title"], info["chapter"], page, info["pages"]))
         if page == 1:
-            download("{}".format(url), "1")
+            _download("{}".format(url), "1")
         else:
-            download("{}/{}".format(url, page), page)
+            _download("{}/{}".format(url, page), page)
