@@ -1,6 +1,7 @@
 from bs4 import BeautifulSoup
 from urllib import request
 import requests
+from tqdm import trange
 import os
 
 def getInfo(url):
@@ -49,8 +50,7 @@ def getChapter(url, **kwargs):
 
     os.chdir(dest)
 
-    for page in range(1, info["pages"] + 1):
-        print("Downloading '{} - {}'. Page {} of {}".format(info["title"], info["chapter"], page, info["pages"]))
+    for page in trange(info["pages"] + 1):
         download(urlBuilder(url, page), page)
 
     print("Download finished!")

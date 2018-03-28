@@ -2,6 +2,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 from urllib import request
+from tqdm import tqdm
 
 def download(uri, page):
     r     = requests.get(uri)
@@ -32,7 +33,7 @@ def getChapter(uri, **kwargs):
 
     os.chdir(dest)
 
-    for index, page in enumerate(pages):
+    for index, page in tqdm(enumerate(pages)):
         download(page.get('value'), index)
 
 
